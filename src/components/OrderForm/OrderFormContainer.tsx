@@ -3,36 +3,33 @@ import React, { useState } from 'react'
 import { useForm, SubmitHandler, FormProvider } from 'react-hook-form'
 import { FormFieldSet } from '../FormFieldSet'
 import { Button, Space, Text } from '#/atoms'
-import { MenuItemsSelector } from './MenuItemsSelector'
+import { MenuItemsSelector } from '../MenuItemsSelector/MenuItemsSelector'
+import { MenuItemsSelector_FormFieldsNameToFormFieldsState } from '../MenuItemsSelector/types'
 
-// @todo check if this is correct
-interface FieldNamesMapToFormState {
-  menuItems: { menuItemId: string; label: string; quantity: number }[]
+interface FormFieldNamesToFormFieldsState
+  extends MenuItemsSelector_FormFieldsNameToFormFieldsState {
   specialInstructions: string
 }
 
 export const OrderFormContainer = () => {
   const [errorMessage, setErrorMessage] = useState<string>('')
-  const methods = useForm<FieldNamesMapToFormState>({
+  const methods = useForm<FormFieldNamesToFormFieldsState>({
     defaultValues: {
       menuItems: [],
       specialInstructions: '',
     },
   })
 
-  const onSubmit: SubmitHandler<FieldNamesMapToFormState> = (data) => {
-    console.log('ON SUBMIT CALLED')
+  const onSubmit: SubmitHandler<FormFieldNamesToFormFieldsState> = (data) => {
     console.log(data)
   }
-
-  console.log('1')
 
   return (
     <FormProvider {...methods}>
       <form onSubmit={methods.handleSubmit(onSubmit)}>
         <FormFieldSet title='Order details'>
           <MenuItemsSelector
-            fieldTitle='Select an item'
+            fieldTitle='Menu items'
             name='menuItems'
             options={[
               { label: 'espresso', id: 'espresso-id' },
@@ -40,8 +37,13 @@ export const OrderFormContainer = () => {
               { label: 'toast', id: 'toast-id' },
               { label: 'omelet', id: 'omelet-id' },
             ]}
+            rules={{
+              required: {
+                value: true,
+                message: 'Please add at least one item from the menu',
+              },
+            }}
           />
-
           <div>
             <label htmlFor='specialInstructions'>Special Instructions</label>
             <input
