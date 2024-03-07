@@ -1,13 +1,16 @@
 'use client'
 import React, { useState } from 'react'
 import { useForm, useFieldArray, SubmitHandler } from 'react-hook-form'
+import { FormFieldSet } from './FormFieldSet'
+import { Button, Space, Text } from '#/atoms'
 
 interface IFormInput {
-  items: { menuItem: string; quantity: number }[]
+  items: { menuItemId: string; quantity: number }[]
   specialInstructions: string
 }
 
 const OrderForm = () => {
+  const [errorMessage, setErrorMessage] = useState<string>('')
   const { control, handleSubmit, register } = useForm<IFormInput>({
     defaultValues: {
       items: [],
@@ -39,53 +42,65 @@ const OrderForm = () => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <select
-        value={selectedItem}
-        onChange={(e) => setSelectedItem(e.target.value)}
-      >
-        <option value=''>Select an item</option>
-        {availableMenuItems.map((item) => (
-          <option key={item} value={item}>
-            {item}
-          </option>
-        ))}
-      </select>
-      <button type='button' onClick={handleAddItem}>
-        Add Item
-      </button>
-
-      {fields.map((field, index) => (
-        <div
-          key={field.id}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            marginBottom: '10px',
-          }}
+      <FormFieldSet title='Order details'>
+        <select
+          value={selectedItem}
+          onChange={(e) => setSelectedItem(e.target.value)}
         >
-          <span style={{ marginRight: '10px' }}>{field.menuItem}</span>
-          <input
-            type='number'
-            {...register(`items.${index}.quantity` as const, {
-              valueAsNumber: true,
-            })}
-            defaultValue={1}
-          />
-          <button
-            type='button'
-            onClick={() => remove(index)}
-            style={{ marginLeft: '10px' }}
-          >
-            Remove
-          </button>
-        </div>
-      ))}
+          <option value=''>Select an item</option>
+          {availableMenuItems.map((item) => (
+            <option key={item} value={item}>
+              {item}
+            </option>
+          ))}
+        </select>
+        <button type='button' onClick={handleAddItem}>
+          Add Item
+        </button>
 
-      <div>
-        <label htmlFor='specialInstructions'>Special Instructions</label>
-        <input id='specialInstructions' {...register('specialInstructions')} />
-      </div>
-      <button type='submit'>Submit Order</button>
+        {fields.map((field, index) => (
+          <div
+            key={field.id}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              marginBottom: '10px',
+            }}
+          >
+            <span style={{ marginRight: '10px' }}>{field.menuItem}</span>
+            <input
+              type='number'
+              {...register(`items.${index}.quantity` as const, {
+                valueAsNumber: true,
+              })}
+              defaultValue={1}
+            />
+            <button
+              type='button'
+              onClick={() => remove(index)}
+              style={{ marginLeft: '10px' }}
+            >
+              Remove
+            </button>
+          </div>
+        ))}
+
+        <div>
+          <label htmlFor='specialInstructions'>Special Instructions</label>
+          <input
+            id='specialInstructions'
+            {...register('specialInstructions')}
+          />
+        </div>
+      </FormFieldSet>
+      <Space h={20} />
+      <Button type='submit' text='Submit Order' />
+      <Space h={20} />
+      {errorMessage && (
+        <Text color='red' textAlign='center' css={{ w: '100%' }}>
+          {errorMessage}
+        </Text>
+      )}
     </form>
   )
 }

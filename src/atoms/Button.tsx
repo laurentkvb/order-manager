@@ -2,7 +2,7 @@ import { styled } from '#/styled-system/jsx'
 import { PandaButtonProps } from '#/types/'
 import { Text, Padding } from '#/atoms'
 
-export type ButtonProps = PandaButtonProps<'display' | 'p' | 'css'> & {
+export type ButtonProps = PandaButtonProps<'display' | 'p' | 'maxW' | 'css'> & {
   text?: string
 }
 
